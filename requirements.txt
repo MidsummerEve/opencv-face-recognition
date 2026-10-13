@@ -1,0 +1,12 @@
+# 人脸识别依赖
+#
+# !!! 注意：必须装 opencv-contrib-python !!!
+# cv2.face.LBPHFaceRecognizer_create 只存在于 contrib 版本里，
+# 装普通的 opencv-python 会报 "module 'cv2' has no attribute 'face'"。
+opencv-contrib-python>=4.5.0
+
+# 读取/转换图像（02灰度转换.py、09数据训练.py 用到）
+Pillow>=9.0.0
+
+# 数值运算
+numpy>=1.20.0

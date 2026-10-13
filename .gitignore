@@ -1,0 +1,52 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# ---------- 虚拟环境 ----------
+.venv/
+venv/
+env/
+ENV/
+
+# ---------- IDE ----------
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# ---------- 敏感配置（务必不要提交）----------
+# 短信平台账号密码等一律放在环境变量或 .env 里，绝不写进代码
+.env
+.env.local
+secrets.py
+sms_config.py
+config.ini
+
+# ---------- 运行产物 ----------
+output/
+*.log
+
+# ---------- 训练产物 ----------
+# 模型和标签映射都由 09数据训练.py 生成，是派生文件，不入库
+# （trainer.yml 用 ORL 数据训练后约 37MB，更不该提交）
+trainer/
+!trainer/.gitkeep
+
+# ---------- 数据与素材 ----------
+# data/ 里的 ORL 人脸库是公开数据集，随仓库一起提供（见 data/README.md）
+# 但用户自己用 08人脸录入.py 拍的图片不要提交
+data/*.sample_*.jpg
+data/sample_*
+
+# 大文件一律不入库
+*.mp4
+
+# ---------- 系统 ----------
+Thumbs.db
+.DS_Store
+desktop.ini
