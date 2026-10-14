@@ -17,12 +17,12 @@ import cv2
 import numpy as np
 from PIL import Image
 
-IMG_EXTS = ('.jpg', '.jpeg', '.png', '.bmp', '.pgm', '.tif', '.tiff')
+# 训练与推理必须共用的量统一放在 config.py：
+# FACE_SIZE（裁片尺寸）、CASCADE_FILE（级联文件）、以及模型/标签的保存路径。
+# 具体原因见 config.py 开头的说明。
+from config import CASCADE_FILE, FACE_SIZE, LABELS_PATH, TRAINER_PATH
 
-# 把人脸裁片统一缩放到这个尺寸再训练。
-# 原因：LBPH 会把人脸切成固定的 8x8 网格来统计纹理，人脸大小不一致时
-# 同一个人的网格内容会错位，导致误判。归一化尺寸后准确率明显提升。
-FACE_SIZE = (100, 100)
+IMG_EXTS = ('.jpg', '.jpeg', '.png', '.bmp', '.pgm', '.tif', '.tiff')
 
 
 def getImageAndLabels(path):
@@ -31,7 +31,7 @@ def getImageAndLabels(path):
     ids = []
 
     # 级联分类器随 OpenCV 安装，用 cv2.data.haarcascades 动态取路径
-    cascade_path = os.path.join(cv2.data.haarcascades, 'haarcascade_frontalface_alt2.xml')
+    cascade_path = os.path.join(cv2.data.haarcascades, CASCADE_FILE)
     face_detector = cv2.CascadeClassifier(cascade_path)
     if face_detector.empty():
         raise SystemExit('加载级联分类器失败：%s' % cascade_path)
@@ -86,13 +86,13 @@ if __name__ == '__main__':
     recognizer.train(faces, np.array(ids))
 
     # 保存模型
-    os.makedirs('trainer', exist_ok=True)
-    recognizer.write('trainer/trainer.yml')
-    print('模型已保存到 trainer/trainer.yml')
+    os.makedirs(os.path.dirname(TRAINER_PATH), exist_ok=True)
+    recognizer.write(TRAINER_PATH)
+    print('模型已保存到 %s' % TRAINER_PATH)
 
     # 顺便记录 id -> 姓名 的映射，供 10人脸识别.py 显示用
     unique_ids = sorted(set(ids))
     labels = {str(i): 'person%02d' % i for i in unique_ids}
-    with open('trainer/labels.json', 'w', encoding='utf-8') as f:
+    with open(LABELS_PATH, 'w', encoding='utf-8') as f:
         json.dump(labels, f, ensure_ascii=False, indent=2)
-    print('标签映射已保存到 trainer/labels.json（共 %d 个身份）' % len(unique_ids))
+    print('标签映射已保存到 %s（共 %d 个身份）' % (LABELS_PATH, len(unique_ids)))

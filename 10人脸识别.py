@@ -2,10 +2,10 @@
 人脸识别主程序：人脸检测 -> LBPH 识别 -> 未知人员短信告警。
 
 用法：
-    python 10人脸识别.py                    # 默认处理 samples/demo.mp4
+    python 10人脸识别.py                    # 默认处理 samples/demo.avi
     python 10人脸识别.py 0                  # 使用本机摄像头
     python 10人脸识别.py D:\\my_video.mp4    # 处理指定视频
-    python 10人脸识别.py samples/demo.mp4 --truth person01
+    python 10人脸识别.py samples/demo.avi --truth person01
                                            # 追加精度统计（需指定画面里的人是谁）
 
 前置：
@@ -28,6 +28,11 @@ import urllib.request
 
 import cv2
 
+# 训练与推理必须共用的量统一放在 config.py：
+# FACE_SIZE（裁片尺寸）、CASCADE_FILE（级联文件）、以及模型/标签的路径。
+# 具体原因见 config.py 开头的说明。
+from config import CASCADE_FILE, FACE_SIZE, LABELS_PATH, TRAINER_PATH
+
 # ============================ 可调参数 ============================
 # 置信度阈值：LBPH 的特性是「值越小越像」，超过该值判为未知人员。
 # 这个值对结果影响很大，且随人脸尺寸、背景、编码方式变化，需要按自己的数据调。
@@ -44,9 +49,6 @@ MAX_WIDTH = 1200
 # 显示时的最小宽度：画面比这个小就放大后再显示，纯为看得清楚，不影响识别结果
 DISPLAY_MIN_WIDTH = 480
 
-# 人脸裁片统一缩放到这个尺寸，必须与 09数据训练.py 里的 FACE_SIZE 一致
-FACE_SIZE = (100, 100)
-
 # 短信平台（短信宝）接口与状态码
 SMS_API = 'https://api.smsbao.com/'
 SMS_STATUS = {
@@ -60,9 +62,6 @@ SMS_STATUS = {
     '43': 'IP 地址限制',
     '50': '内容含有敏感词',
 }
-
-TRAINER_PATH = os.path.join('trainer', 'trainer.yml')
-LABELS_PATH = os.path.join('trainer', 'labels.json')
 
 
 # ============================ 短信告警 ============================
@@ -149,7 +148,7 @@ def main():
 
     # 与 09数据训练.py 使用同一个级联文件，保证检测口径一致
     face_detector = cv2.CascadeClassifier(
-        os.path.join(cv2.data.haarcascades, 'haarcascade_frontalface_alt2.xml'))
+        os.path.join(cv2.data.haarcascades, CASCADE_FILE))
 
     cap = cv2.VideoCapture(int(src) if src.isdigit() else src)
     if not cap.isOpened():
