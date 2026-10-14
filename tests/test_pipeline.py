@@ -42,6 +42,42 @@ def test_unknown_threshold_positive():
     assert UNKNOWN_THRESHOLD > 0
 
 
+def test_holdout_subjects_are_valid():
+    """留出身份必须是非空整数集合，且不能太大——否则训练样本会不够。"""
+    from src.config import HOLDOUT_SUBJECTS
+    assert HOLDOUT_SUBJECTS, '留出身份不能为空，否则演示不了陌生人报警'
+    assert all(isinstance(s, int) and s > 0 for s in HOLDOUT_SUBJECTS)
+    assert len(HOLDOUT_SUBJECTS) < 40
+
+
+def test_trigger_frames_positive():
+    from src.config import UNKNOWN_TRIGGER_FRAMES
+    assert UNKNOWN_TRIGGER_FRAMES > 0
+
+
+# ---------------------------------------------------------------- 数据集
+def test_subject_of_parses_label():
+    """文件名点号前的数字就是标签 id——这是训练能对上号的前提。"""
+    from src.dataset import subject_of
+    assert subject_of('1.s01_1.jpg') == 1
+    assert subject_of('40.s40_10.jpg') == 40
+    assert subject_of('readme.txt') is None
+    assert subject_of('没有数字.jpg') is None
+
+
+def test_holdout_not_in_dataset_labels():
+    """训练产出的标签映射里，不应出现留出身份。
+
+    这条直接检查训练产物：如果哪天忘了排除，陌生人演示会立刻失效。
+    """
+    from src.config import HOLDOUT_SUBJECTS
+    names = recognizer.load_names()
+    if not names:
+        pytest.skip('还没有训练好的模型，跳过（先跑 python train.py）')
+    assert not (set(names) & HOLDOUT_SUBJECTS), (
+        '留出身份出现在了训练结果里：%s' % sorted(set(names) & HOLDOUT_SUBJECTS))
+
+
 # ---------------------------------------------------------------- 检测模块
 def test_create_detector():
     """级联分类器能正常加载（验证 cv2.data.haarcascades 路径可用）。"""
