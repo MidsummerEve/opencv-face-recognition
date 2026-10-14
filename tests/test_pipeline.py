@@ -28,7 +28,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # ---------------------------------------------------------------- 配置一致性
 def test_face_size_is_2d_tuple():
-    """裁片尺寸必须是二元组——训练与推理都靠它。"""
+    """裁片尺寸必须是二元组，训练与推理都靠它。"""
     assert isinstance(FACE_SIZE, tuple) and len(FACE_SIZE) == 2
     assert all(isinstance(v, int) and v > 0 for v in FACE_SIZE)
 
@@ -43,7 +43,7 @@ def test_unknown_threshold_positive():
 
 
 def test_holdout_subjects_are_valid():
-    """留出身份必须是非空整数集合，且不能太大——否则训练样本会不够。"""
+    """留出身份必须是非空整数集合。集合太大会导致训练样本不够。"""
     from src.config import HOLDOUT_SUBJECTS
     assert HOLDOUT_SUBJECTS, '留出身份不能为空，否则演示不了陌生人报警'
     assert all(isinstance(s, int) and s > 0 for s in HOLDOUT_SUBJECTS)
@@ -57,7 +57,7 @@ def test_trigger_frames_positive():
 
 # ---------------------------------------------------------------- 数据集
 def test_subject_of_parses_label():
-    """文件名点号前的数字就是标签 id——这是训练能对上号的前提。"""
+    """文件名点号前的数字就是标签 id，训练时靠它给每张图对号。"""
     from src.dataset import subject_of
     assert subject_of('1.s01_1.jpg') == 1
     assert subject_of('40.s40_10.jpg') == 40
@@ -153,7 +153,7 @@ def test_alarm_not_configured(monkeypatch):
 def test_alarm_handles_network_failure(monkeypatch):
     """凭据配好但网络不通时，只打印失败，不应把程序打断、也不应抛异常。
 
-    这里把 urlopen 换成会抛错的假函数——测试不应该真的去访问外部服务。
+    这里把 urlopen 换成会抛错的假函数，测试不应该真的去访问外部服务。
     """
     monkeypatch.setenv('SMS_USER', 'dummy')
     monkeypatch.setenv('SMS_PASSWORD', 'dummy')

@@ -3,7 +3,7 @@
 
 命名约定
 --------
-文件名**点号前的数字就是标签 id**，同一个人的所有图片用同一个数字：
+文件名点号前的数字就是标签 id，同一个人的所有图片用同一个数字：
 
     1.s01_1.jpg   -> 标签 1
     1.s01_2.jpg   -> 标签 1
@@ -42,7 +42,7 @@ def load_samples(data_dir=DATA_DIR, exclude_subjects=HOLDOUT_SUBJECTS, verbose=T
     参数
     ----
     exclude_subjects : 要排除的身份集合，默认是 config.HOLDOUT_SUBJECTS。
-        这些留出身份**不参与训练**，识别时会被判为陌生人——
+        这些留出身份不参与训练，识别时会被判为陌生人，
         这正是预警系统的形态：模型只认识名单里的人。
 
     统计信息是一个字典，含 total / used / skipped_no_face /

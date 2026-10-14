@@ -1,18 +1,18 @@
 # screenshots/
 
-放项目的效果截图，README 里可以引用这里的图片。
+README 里引用的图放在这里。
 
-建议至少截这几张：
+现在有两张动图，都是 `recognize.py --save` 导出视频之后转成的：
 
-1. **人脸检测** —— 运行 `05人脸检测.py` 或 `06检测多个.py`，截检测框
-2. **识别成功** —— 运行 `10人脸识别.py`，截画面上标注出姓名的那一帧
-3. **未知人员告警** —— 显示 `unknown` 标签的那一帧
-4. **训练过程** —— `09数据训练.py` 的输出
+- `demo_recognition.gif` —— 认出登记过的人，绿框加姓名
+- `demo_alert.gif` —— 陌生人累计到阈值，弹出报警条
 
-截图后可以这样写进 README：
+想再补几张的话，可以跑：
 
-```markdown
-![人脸识别效果](screenshots/demo.png)
+```bash
+python recognize.py --hold              # 播放完停住，方便截图
+python tutorials/02_face_detection.py   # 单张 / 多人脸检测
+python -m pytest tests/ -v              # 测试通过的样子
 ```
 
-> 注意：截图里不要包含真实姓名、手机号、账号密码等个人信息。
+截完按同样方式写进 README 就行。截图时注意别把真实姓名、手机号、账号密码截进去。
