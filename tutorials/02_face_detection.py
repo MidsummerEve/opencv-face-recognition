@@ -7,7 +7,7 @@
 
 两个场景只差一个循环，所以合并在一个脚本里对比着看更清楚。
 
-运行（务必在项目根目录下执行）：
+运行：
     python tutorials/02_face_detection.py
 按任意键切换场景，按 q 退出。
 
@@ -20,6 +20,10 @@
 import os
 
 import cv2
+
+# samples/ 相对项目根目录，而本脚本在 tutorials/ 下，所以要往上一级。
+# 这样在 PyCharm 里运行时不依赖它的「工作目录」设置。
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 级联分类器文件随 OpenCV 一起安装，用 cv2.data.haarcascades 动态取路径，
 # 不要写死本机绝对路径，否则换台电脑就跑不起来。

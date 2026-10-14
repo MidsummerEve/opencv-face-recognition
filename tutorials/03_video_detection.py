@@ -4,7 +4,7 @@
 学习路径的第三站。相比静态图片，视频多了一个「逐帧读取」的循环，
 以及必须处理「读完了 / 摄像头断了」的退出条件。
 
-运行（务必在项目根目录下执行）：
+运行：
     python tutorials/03_video_detection.py                 # 用自带示例视频
     python tutorials/03_video_detection.py 0               # 用本机摄像头
     python tutorials/03_video_detection.py D:\\my_video.mp4  # 用指定视频
@@ -16,6 +16,10 @@ import os
 import sys
 
 import cv2
+
+# samples/ 相对项目根目录，而本脚本在 tutorials/ 下，所以要往上一级。
+# 这样在 PyCharm 里运行时不依赖它的「工作目录」设置。
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 CASCADE = os.path.join(cv2.data.haarcascades, 'haarcascade_frontalface_alt2.xml')
 detector = cv2.CascadeClassifier(CASCADE)

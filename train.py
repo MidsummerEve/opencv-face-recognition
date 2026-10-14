@@ -22,9 +22,16 @@
 训练与推理共用同一份，不要在脚本里另写一份。
 """
 
+import os
+
 from src import recognizer
 from src.config import DATA_DIR, LABELS_PATH, TRAINER_PATH
 from src.dataset import load_samples
+
+# data/、trainer/ 这些路径都相对项目根目录。把工作目录切到脚本所在目录，
+# 这样在 PyCharm 里运行时不依赖它的「工作目录」设置——PyCharm 默认用的是
+# 外层工程目录，不切的话会去找 <工程目录>/data，报找不到数据目录。
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 def main():

@@ -35,9 +35,13 @@ import os
 import cv2
 
 from src import alarm, recognizer
-from src.config import (FACE_SIZE, SMS_COOLDOWN, UNKNOWN_THRESHOLD,
-                        UNKNOWN_TRIGGER_FRAMES)
+from src.config import UNKNOWN_THRESHOLD, UNKNOWN_TRIGGER_FRAMES
 from src.detector import create_detector, crop_faces, detect_faces
+
+# samples/、trainer/、outputs/ 这些路径都相对项目根目录。把工作目录切到脚本
+# 所在目录，这样在 PyCharm 里运行时不依赖它的「工作目录」设置——PyCharm 默认
+# 用的是外层工程目录，不切的话会去找 <工程目录>/samples，报找不到视频源。
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # 颜色（注意 OpenCV 用的是 BGR 顺序，不是 RGB）
 COLOR_KNOWN = (0, 200, 0)      # 绿：已知人员

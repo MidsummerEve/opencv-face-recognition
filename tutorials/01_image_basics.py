@@ -4,19 +4,25 @@
 学习路径的第一站，四个 OpenCV 基础操作依次演示。
 每个脚本都是独立可运行的，不依赖项目里的其它模块，方便单独复制出去用。
 
-运行（务必在项目根目录下执行）：
+运行：
     python tutorials/01_image_basics.py
 
 按任意键进入下一步，按 q 退出。
 """
 
+import os
+
 import cv2
+
+# samples/ 相对项目根目录，而本脚本在 tutorials/ 下，所以要往上一级。
+# 这样在 PyCharm 里运行时不依赖它的「工作目录」设置。
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 SAMPLE = 'samples/sample_face.jpg'
 
 img = cv2.imread(SAMPLE)
 if img is None:
-    raise SystemExit('未找到 %s —— 请在项目根目录下运行本脚本' % SAMPLE)
+    raise SystemExit('未找到 %s，检查一下 samples/ 目录是不是完整的' % SAMPLE)
 
 # shape 的顺序是（高, 宽, 通道数）
 print('原图尺寸:', img.shape)

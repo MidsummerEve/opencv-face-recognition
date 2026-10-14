@@ -4,7 +4,7 @@
 学习路径的最后一站。做完这一步，你就有了自己的数据集，
 可以拿去跑 train.py 训练、再用 recognize.py 识别。
 
-运行（务必在项目根目录下执行）：
+运行：
     python tutorials/04_face_capture.py                  # 处理自带示例视频
     python tutorials/04_face_capture.py 0                # 用本机摄像头（推荐）
     python tutorials/04_face_capture.py D:\\my_video.mp4   # 处理指定视频
@@ -30,6 +30,10 @@ import os
 import sys
 
 import cv2
+
+# data/、samples/ 都相对项目根目录，而本脚本在 tutorials/ 下，所以要往上一级。
+# 这样在 PyCharm 里运行时不依赖它的「工作目录」设置。
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # 保存目录（相对路径，换台电脑也能用）
 SAVE_DIR = 'data'

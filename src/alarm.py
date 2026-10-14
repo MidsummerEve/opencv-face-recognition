@@ -17,11 +17,10 @@ import time
 import urllib.parse
 import urllib.request
 
+from src.config import SMS_COOLDOWN
+
 # 短信平台（短信宝）接口
 SMS_API = 'https://api.smsbao.com/'
-
-# 两次短信之间的最短间隔（秒），避免告警轰炸
-SMS_COOLDOWN = 60
 
 # 平台返回的状态码
 SMS_STATUS = {
