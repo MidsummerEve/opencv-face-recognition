@@ -5,10 +5,9 @@
 
 不依赖深度学习框架，纯 CPU 运行，从数据到告警每一步都可复现。
 
-![识别效果](screenshots/demo_recognition.png)
+![识别过程](screenshots/demo_recognition.gif)
 
-*图为演示视频中的 4 帧：红框是检测到的人脸，绿字是识别结果与置信度（越小越像，这里都是 0）。
-人脸来自 ORL 公开数据集。*
+*动图是识别过程的实录：红框为检测到的人脸，绿字为识别结果。演示素材来自 ORL 公开数据集。*
 
 **技术栈** `Python` · `OpenCV (opencv-contrib)` · `NumPy` · `Pillow`
 
@@ -34,14 +33,20 @@ pip install -r requirements.txt
 # 1. 训练（仓库自带 ORL 公开数据集，40 人 × 10 张，可直接跑）
 python train.py
 
-# 2. 识别（默认用自带的演示视频）
+# 2. 识别（默认用自带的演示视频，约 16 秒）
 python recognize.py
 
-# 也可以用自己的摄像头
+# 也可以用自己的摄像头（最直观）
 python recognize.py 0
 
+# 把带标注的结果存成视频，方便反复观看
+python recognize.py --save outputs/demo_out.avi
+
+# 播放完保持最后一帧，按任意键才关窗
+python recognize.py --hold
+
 # 无图形界面 / 只想看统计
-python recognize.py samples/demo.avi --no-display
+python recognize.py --no-display
 ```
 
 > 安装时**必须用 `opencv-contrib-python`，不是 `opencv-python`**。
@@ -119,8 +124,8 @@ python recognize.py samples/demo.avi --no-display
 
 | 指标 | 结果 |
 |---|---|
-| 人脸检出 | 64 / 64 帧（100%）|
-| 正确识别 | **64 / 64（100%）** |
+| 人脸检出 | 160 / 160 帧（100%）|
+| 正确识别 | **160 / 160（100%）** |
 | 平均置信度 | 0.00 |
 
 ### 2. 泛化测试（模型没见过的照片）
@@ -199,6 +204,30 @@ set SMS_PHONE=接收告警的手机号
 | `04_face_capture.py` | 从摄像头采集训练素材 | 03 |
 
 跑完这一圈，就能理解 `train.py` / `recognize.py` 里每一步在做什么。
+
+---
+
+## 常见问题
+
+**Q：运行 `python recognize.py`，怎么好像只有结果、没看到识别的过程？**
+
+A：两个原因，目前都已经修掉了：
+
+1. **演示视频原本只有 6.4 秒**（64 帧 @ 10fps），窗口一闪就过去了 → 现已加长到 **16 秒**。
+2. **播放速度没有按源帧率走**。原先写死 `waitKey(10)`，但人脸检测本身就要
+   20~40 毫秒，于是每帧实际耗时 30~50 毫秒，等于把视频**快放了一倍多**，
+   实际窗口只存活 2~3 秒 → 现在按源帧率（10 fps）计算每帧延时。
+
+如果还是觉得不够从容，有三种办法：
+
+```bash
+python recognize.py 0                             # 用摄像头，实时观察
+python recognize.py --save outputs/demo_out.avi    # 存成视频，之后反复看
+python recognize.py --hold                        # 播放完停住，按任意键才关窗
+```
+
+> 补充：OpenCV 的 `imshow` 窗口有时会出现在 IDE 窗口**后面**。
+> 如果在 PyCharm 里跑完什么都没看到，先检查任务栏有没有多出一个窗口。
 
 ---
 

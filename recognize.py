@@ -24,6 +24,7 @@
 """
 
 import argparse
+import os
 
 import cv2
 
@@ -53,6 +54,13 @@ def parse_args():
     parser.add_argument(
         '--no-display', action='store_true',
         help='不弹出显示窗口，只输出统计（服务器或无图形界面时使用）')
+    parser.add_argument(
+        '--save', metavar='输出文件', default=None,
+        help='把带标注的结果视频保存下来（例如 outputs/demo_out.avi），'
+             '之后可以反复观看')
+    parser.add_argument(
+        '--hold', action='store_true',
+        help='播放结束后保持最后一帧，按任意键才关闭窗口（便于观察结果）')
     return parser.parse_args()
 
 
@@ -90,6 +98,31 @@ def main():
     cap = cv2.VideoCapture(int(source) if source.isdigit() else source)
     if not cap.isOpened():
         raise SystemExit('无法打开视频源：%s' % source)
+
+    # 按源帧率播放。
+    # 如果只写死 waitKey(10)，因为人脸检测本身就要 20~40 毫秒，
+    # 每帧实际耗时远大于 10 毫秒，视频会被「快放」一倍以上，窗口一闪就过去了。
+    source_fps = cap.get(cv2.CAP_PROP_FPS)
+    if not source_fps or source_fps <= 0 or source_fps > 120:
+        source_fps = 25.0
+    frame_delay = max(1, int(round(1000.0 / source_fps)))
+
+    # 可选：把带标注的结果写成视频文件，便于反复观看
+    writer = None
+    if args.save:
+        parent = os.path.dirname(args.save)
+        if parent:
+            os.makedirs(parent, exist_ok=True)
+        ext = os.path.splitext(args.save)[1].lower()
+        fourcc = cv2.VideoWriter_fourcc(*(('mp4v') if ext == '.mp4' else ('MJPG')))
+        writer = cv2.VideoWriter(
+            args.save, fourcc, source_fps,
+            (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+             int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+        if not writer.isOpened():
+            raise SystemExit('无法创建输出视频：%s' % args.save)
+        print('结果将保存到 %s' % args.save)
+
     print("程序启动成功，按 'q' 退出")
 
     total = correct = wrong = reject = 0
@@ -138,6 +171,10 @@ def main():
             cv2.putText(frame, name, (x + 10, max(y - 10, 12)),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
 
+        # 保存带标注的一帧（按原始分辨率，不放大）
+        if writer is not None:
+            writer.write(frame)
+
         if not args.no_display:
             # 画面太小就放大后再显示，纯为看得清楚，不影响识别结果
             disp = frame
@@ -146,11 +183,19 @@ def main():
                 disp = cv2.resize(frame, None, fx=s, fy=s,
                                   interpolation=cv2.INTER_NEAREST)
             cv2.imshow('result', disp)
-            if cv2.waitKey(10) & 0xFF == ord('q'):
+            # 用按源帧率算出的延时，而不是写死的 10ms
+            if cv2.waitKey(frame_delay) & 0xFF == ord('q'):
                 break
 
     cap.release()
+    if writer is not None:
+        writer.release()
+        print('带标注的结果已保存到 %s' % args.save)
+
     if not args.no_display:
+        if args.hold:
+            print('播放结束 —— 按任意键关闭窗口')
+            cv2.waitKey(0)
         cv2.destroyAllWindows()
 
     print_report(total, correct, wrong, reject, args.truth)
