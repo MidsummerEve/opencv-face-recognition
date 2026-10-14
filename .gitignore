@@ -6,6 +6,7 @@ __pycache__/
 .eggs/
 build/
 dist/
+.pytest_cache/
 
 # ---------- 虚拟环境 ----------
 .venv/
@@ -20,30 +21,29 @@ ENV/
 *.swp
 
 # ---------- 敏感配置（务必不要提交）----------
-# 短信平台账号密码等一律放在环境变量或 .env 里，绝不写进代码
+# 短信平台账号密码等一律放环境变量或 .env，绝不写进代码。
+# 原因：一旦进入 Git 历史，事后删掉也仍然能被翻出来。
 .env
 .env.local
 secrets.py
-sms_config.py
-config.ini
+
+# ---------- 训练产物 ----------
+# 模型和标签映射都由 train.py 生成，是派生文件，不入库。
+# （trainer.yml 用 ORL 数据训练后约 38MB，更不该提交）
+trainer/
+!trainer/.gitkeep
+
+# ---------- 数据 ----------
+# data/ 里的 ORL 人脸库是公开数据集，随仓库一起提供（见 data/README.md）。
+# 但用 tutorials/04_face_capture.py 自己拍的图片不要提交。
+data/*.sample_*.jpg
 
 # ---------- 运行产物 ----------
 output/
 *.log
 
-# ---------- 训练产物 ----------
-# 模型和标签映射都由 09数据训练.py 生成，是派生文件，不入库
-# （trainer.yml 用 ORL 数据训练后约 37MB，更不该提交）
-trainer/
-!trainer/.gitkeep
-
-# ---------- 数据与素材 ----------
-# data/ 里的 ORL 人脸库是公开数据集，随仓库一起提供（见 data/README.md）
-# 但用户自己用 08人脸录入.py 拍的图片不要提交
-data/*.sample_*.jpg
-data/sample_*
-
-# 大文件一律不入库
+# ---------- 大文件 ----------
+# 注意：samples/demo.avi 是演示素材，需要入库，所以不能整体忽略 *.avi
 *.mp4
 
 # ---------- 系统 ----------
