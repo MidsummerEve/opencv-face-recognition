@@ -26,6 +26,24 @@ FACE_SIZE = (100, 100)
 # 完整路径由 cv2.data.haarcascades 动态拼接（随 OpenCV 安装，不写死本机路径）。
 CASCADE_FILE = 'haarcascade_frontalface_alt2.xml'
 
+# 人脸检测参数，训练与推理必须完全一致。
+# 用法：face_detector.detectMultiScale(gray, **DETECT_PARAMS)
+#
+# 各项含义：
+#   scaleFactor  —— 每次把检测窗口放大多少倍（越小越慢越细）
+#   minNeighbors —— 一个候选框要被多少个邻近框「投票」才认定是人脸。
+#                   调大 = 更严格（少误检，可能漏检）；调小 = 更宽松。
+#   minSize      —— 小于这个尺寸的框直接忽略，避免把噪点当人脸。
+#
+# 为什么统一到 minNeighbors=5：
+#   推理端面对的是真实摄像头/杂乱背景，用 5 更稳健，不会把误检框当成人脸；
+#   也避免训练时把误检样本喂进模型。在 ORL 留出集上代价约 1 个百分点。
+DETECT_PARAMS = {
+    'scaleFactor': 1.1,
+    'minNeighbors': 5,
+    'minSize': (30, 30),
+}
+
 
 # ---------------- 文件路径（相对项目根目录）----------------
 

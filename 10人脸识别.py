@@ -29,9 +29,10 @@ import urllib.request
 import cv2
 
 # 训练与推理必须共用的量统一放在 config.py：
-# FACE_SIZE（裁片尺寸）、CASCADE_FILE（级联文件）、以及模型/标签的路径。
-# 具体原因见 config.py 开头的说明。
-from config import CASCADE_FILE, FACE_SIZE, LABELS_PATH, TRAINER_PATH
+# FACE_SIZE（裁片尺寸）、CASCADE_FILE（级联文件）、DETECT_PARAMS（检测参数）、
+# 以及模型/标签的路径。具体原因见 config.py 开头的说明。
+from config import (CASCADE_FILE, DETECT_PARAMS, FACE_SIZE, LABELS_PATH,
+                    TRAINER_PATH)
 
 # ============================ 可调参数 ============================
 # 置信度阈值：LBPH 的特性是「值越小越像」，超过该值判为未知人员。
@@ -173,8 +174,8 @@ def main():
             frame = cv2.resize(frame, None, fx=scale, fy=scale)
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_detector.detectMultiScale(
-            gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+        # 检测参数与 09数据训练.py 共用 config.DETECT_PARAMS
+        faces = face_detector.detectMultiScale(gray, **DETECT_PARAMS)
 
         for x, y, w, h in faces:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)

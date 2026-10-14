@@ -18,9 +18,10 @@ import numpy as np
 from PIL import Image
 
 # 训练与推理必须共用的量统一放在 config.py：
-# FACE_SIZE（裁片尺寸）、CASCADE_FILE（级联文件）、以及模型/标签的保存路径。
-# 具体原因见 config.py 开头的说明。
-from config import CASCADE_FILE, FACE_SIZE, LABELS_PATH, TRAINER_PATH
+# FACE_SIZE（裁片尺寸）、CASCADE_FILE（级联文件）、DETECT_PARAMS（检测参数）、
+# 以及模型/标签的保存路径。具体原因见 config.py 开头的说明。
+from config import (CASCADE_FILE, DETECT_PARAMS, FACE_SIZE, LABELS_PATH,
+                    TRAINER_PATH)
 
 IMG_EXTS = ('.jpg', '.jpeg', '.png', '.bmp', '.pgm', '.tif', '.tiff')
 
@@ -57,7 +58,8 @@ def getImageAndLabels(path):
         PIL_img = Image.open(imagePath).convert('L')
         img_numpy = np.array(PIL_img, 'uint8')
 
-        faces = face_detector.detectMultiScale(img_numpy)
+        # 检测参数与 10人脸识别.py 共用 config.DETECT_PARAMS
+        faces = face_detector.detectMultiScale(img_numpy, **DETECT_PARAMS)
         if len(faces) == 0:
             skipped += 1
             continue
